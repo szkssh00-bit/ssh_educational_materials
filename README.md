@@ -1,24 +1,24 @@
-# SSH Educational Materials Portal v8
+# SSH Educational Materials Portal v9
 
-## v8の目的
+## v9で修正した問題
 
-v7ではGoogle接続確認は成功していても、その後の管理処理で例外が起きた場合、
-ログイン直後の暫定エラー表示が残る問題がありました。
+v8でGoogle接続状態が正常でも「管理処理診断」が未実行のまま止まる場合がありました。
 
-v8では、Google接続確認と管理データ処理を完全に分離しました。
+主な修正:
 
-Adminは次の6段階を個別に実行・表示します。
-
-1. 管理Spreadsheetを開く
-2. 管理シート構成を確認・作成
-3. パッケージ・既知資料を初期化
-4. Google Driveフォルダを走査
-5. Drive → 公開資料シートへ同期
-6. Admin Dashboardを読み込む
-
-各段階に `OK` または具体的なエラーを表示します。
-
-Drive同期だけが失敗した場合でも、管理Spreadsheetの既存資料はAdminで編集できます。
+1. `google.script.run` へ返すDashboardデータから `Date` オブジェクトを除去
+2. DateはISO文字列へ変換してからブラウザへ返す
+3. 接続確認とDashboard読込を別呼び出しにせず統合
+4. ログイン後は `adminBootstrap()` 1回で以下を実行
+   - OAuth状態確認
+   - Spreadsheet接続確認
+   - Drive接続確認
+   - 管理シート作成/確認
+   - 初期パッケージ登録
+   - Drive走査
+   - Drive→Spreadsheet同期
+   - Dashboard生成
+5. Drive同期・再読込もそれぞれ1つのGAS呼び出しに統合
 
 ## Admin
 
@@ -32,43 +32,52 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 5801
 ```
 
-## Google接続先
+## 正常時の管理処理診断
 
-管理Spreadsheet:
+```text
+1. 管理Spreadsheetを開く
+   OK
+
+2. 管理シート構成を確認・作成
+   OK
+
+3. パッケージ・既知資料を初期化
+   OK: packages=..., materials=...
+
+4. Google Driveフォルダを走査
+   OK: count=...
+
+5. Drive → 公開資料シートへ同期
+   OK
+
+6. Admin Dashboardを読み込む
+   OK
+```
+
+## 管理Spreadsheet
 
 ```text
 https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
 ```
 
-Drive:
+## Drive
 
 ```text
 https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
 ```
 
-## 正常時の診断例
-
-```text
-1. 管理Spreadsheetを開く             OK
-2. 管理シート構成を確認・作成       OK
-3. パッケージ・既知資料を初期化     OK
-4. Google Driveフォルダを走査        OK: count=...
-5. Drive → 公開資料シートへ同期      OK
-6. Admin Dashboardを読み込む          OK
-```
-
 ## デプロイ
 
-同じフォルダへ:
+同じフォルダに:
 
 ```text
-ssh_educational_materials_portal_v8.zip
-deploy_portal_v8.cmd
+ssh_educational_materials_portal_v9.zip
+deploy_portal_v9.cmd
 ```
 
-を置いてCMDを実行してください。
+を置いて `deploy_portal_v9.cmd` を実行してください。
 
-固定GAS Script ID:
+固定Script ID:
 
 ```text
 15WnOsdwFLlIKHjsNR9Eo_6If4jbBzjAQLSVylmXVKJw2CAttywn6ILyn
