@@ -1,28 +1,94 @@
-# SSH Educational Materials Portal v10
+# SSH Educational Materials Portal v11
 
-## 修正内容
+## v11: 説明文をSpreadsheetと正式に連動
 
-v9のAdminで発生した:
+パッケージと公開資料のdescriptionを、管理Spreadsheetの **「説明管理」シート** から直接編集できます。
+
+管理Spreadsheet:
 
 ```text
-Admin統合処理 ERROR: renderConnection is not defined
+https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
 ```
 
-を修正しました。
+v11デプロイ後、自動的に次のシートが作成されます。
 
-原因は、Admin通信を `adminBootstrap()` に統合した際に、
-クライアント側の `renderConnection()` 定義だけが削除されていたことです。
+```text
+説明管理
+```
 
-v10では:
+列構成:
 
-- `renderConnection()` を復元
-- 接続表示エラーが起きても6段階診断を消さない
-- サーバー診断結果を先に表示
-- Admin JavaScript自己診断を追加
-- DateオブジェクトをGAS→ブラウザ返却前に文字列化
-- `adminBootstrap()` による一括同期を維持
+```text
+対象種別 | 対象ID | 表示名 | 説明 | 更新日時
+```
 
-しています。
+対象種別は:
+
+```text
+パッケージ
+公開資料
+```
+
+です。
+
+## 編集例
+
+### パッケージ
+
+現在:
+
+```text
+Google Driveフォルダ「【外部公開中】科学英語」から自動作成したパッケージです。
+```
+
+「説明管理」シートで:
+
+```text
+対象種別: パッケージ
+表示名: 【外部公開中】科学英語
+説明: （ここを自由に編集）
+```
+
+とすると、Adminと公開Portalのパッケージ説明に反映されます。
+
+### 公開資料
+
+例:
+
+```text
+表示名: 【外部公開中】実験ツール貸出・返却フォーム
+説明: 貸出または返却を記録するGoogle Formです。
+```
+
+「説明」列を変更すると、Adminと公開Portalに反映されます。
+
+## 同期ルール
+
+説明文については「説明管理」シートが正式なマスタです。
+
+```text
+説明管理シート
+   ↓
+公開パッケージ / 公開資料
+   ↓
+Admin
+   ↓
+公開Portal
+```
+
+Adminで説明を編集して保存した場合も「説明管理」シートへ同時保存します。
+
+Google Drive同期では:
+
+- ファイル名
+- Drive ID
+- MIMEタイプ
+- Driveパス
+- Drive更新日時
+
+などは更新しますが、**説明文は上書きしません**。
+
+したがって、説明文を手作業で整えた後にDrive同期しても保持されます。
 
 ## Admin
 
@@ -36,37 +102,26 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 5801
 ```
 
-正常ならログイン直後に:
+Admin上部に新しく:
 
 ```text
-OAuth認証            認証済み
-管理Spreadsheet      OK: SSH_educational_materials
-Google Drive         OK: 外部公開中の教材
+説明管理シート
 ```
 
-に続いて、
+ボタンを追加しています。
+
+## 固定GAS
+
+Script ID:
 
 ```text
-1. 管理Spreadsheetを開く
-2. 管理シート構成を確認・作成
-3. パッケージ・既知資料を初期化
-4. Google Driveフォルダを走査
-5. Drive → 公開資料シートへ同期
-6. Admin Dashboardを読み込む
+15WnOsdwFLlIKHjsNR9Eo_6If4jbBzjAQLSVylmXVKJw2CAttywn6ILyn
 ```
 
-の診断結果が表示されます。
-
-## 管理Spreadsheet
+Web App:
 
 ```text
-https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
-```
-
-## Google Drive
-
-```text
-https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
+https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec
 ```
 
 ## デプロイ
@@ -74,20 +129,8 @@ https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
 同じフォルダに:
 
 ```text
-ssh_educational_materials_portal_v10.zip
-deploy_portal_v10.cmd
+ssh_educational_materials_portal_v11.zip
+deploy_portal_v11.cmd
 ```
 
-を置いて `deploy_portal_v10.cmd` を実行します。
-
-固定Script ID:
-
-```text
-15WnOsdwFLlIKHjsNR9Eo_6If4jbBzjAQLSVylmXVKJw2CAttywn6ILyn
-```
-
-固定Web App URL:
-
-```text
-https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec
-```
+を置き、`deploy_portal_v11.cmd` を実行してください。
