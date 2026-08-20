@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SSH Educational Materials Admin</title>
+<style>
+:root{--p:#0b5a72;--p2:#08475b;--bg:#f3f6f8;--line:#d6e0e6;--txt:#173042;--muted:#667984;--danger:#a33e3e;--ok:#26765a}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;line-height:1.55}
+button,input,select,textarea{font:inherit}.hidden{display:none!important}
+.login{min-height:100vh;display:grid;place-items:center;padding:22px}.loginbox,.section,.metric{background:#fff;border:1px solid var(--line);border-radius:15px;box-shadow:0 8px 24px #1c36450d}
+.loginbox{width:min(430px,100%);padding:28px}.loginbox h1{margin:0}.loginbox p{color:var(--muted)}
+.field{display:grid;gap:5px;margin:11px 0}.field label{font-size:.79rem;font-weight:800;color:#405864}.field input,.field select,.field textarea{width:100%;border:1px solid var(--line);border-radius:9px;padding:9px 10px;outline:none;background:#fff}.field textarea{min-height:92px;resize:vertical}
+.btn{border:0;border-radius:9px;min-height:38px;padding:0 13px;cursor:pointer;font-weight:800}.primary{background:var(--p);color:#fff}.secondary{background:#e8f0f3;color:var(--p2)}.ghost{background:#fff;border:1px solid var(--line);color:var(--txt)}.danger{background:#faeaea;color:var(--danger)}.small{min-height:31px;font-size:.76rem;padding:0 9px}
+.msg{color:var(--danger);font-size:.82rem;margin-top:10px}.top{position:sticky;top:0;z-index:5;background:#ffffffee;border-bottom:1px solid var(--line);padding:10px 16px;backdrop-filter:blur(10px)}.topin{max-width:1420px;margin:auto;display:flex;justify-content:space-between;align-items:center;gap:10px}.actions,.toolbar{display:flex;gap:7px;flex-wrap:wrap}.top a{text-decoration:none}
+.wrap{max-width:1420px;margin:auto;padding:20px 16px 60px}.metrics{display:grid;grid-template-columns:repeat(5,1fr);gap:9px}.metric{padding:13px}.metric small{display:block;color:var(--muted);font-size:.7rem}.metric strong{font-size:1.3rem}
+.tabs{display:flex;gap:7px;flex-wrap:wrap;margin:16px 0}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:7px 12px;font-weight:800;cursor:pointer}.tab.active{background:var(--p);color:#fff;border-color:var(--p)}
+.section{padding:17px;margin-bottom:15px}.shead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:11px}.shead h2{margin:0;font-size:1.08rem}.sub{margin:3px 0 0;color:var(--muted);font-size:.78rem}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:10px}table{width:100%;border-collapse:collapse;min-width:950px;font-size:.77rem}th,td{padding:8px 9px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}th{background:#f1f5f7;white-space:nowrap}
+.pill{display:inline-block;border-radius:999px;padding:3px 7px;background:#eef2f4;font-weight:800;font-size:.68rem}.pill.on{background:#e4f3ed;color:var(--ok)}.truncate{max-width:330px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.editor{display:grid;grid-template-columns:1.15fr .85fr;gap:14px}.formgrid{display:grid;grid-template-columns:1fr 1fr;gap:0 11px}.span2{grid-column:1/-1}.checks{display:flex;gap:16px;flex-wrap:wrap;margin:12px 0}.checks label{font-size:.82rem;font-weight:800}
+.previewbox{border:1px solid var(--line);border-radius:11px;overflow:hidden}.previewhead{padding:8px 10px;background:#f5f8f9;border-bottom:1px solid var(--line);color:var(--muted);font-size:.75rem}.previewbox iframe{width:100%;height:520px;border:0;background:#fff}
+.toast{position:fixed;right:16px;bottom:16px;background:#173042;color:#fff;padding:11px 14px;border-radius:10px;font-size:.8rem;z-index:20}
+@media(max-width:900px){.metrics{grid-template-columns:repeat(2,1fr)}.editor{grid-template-columns:1fr}}
+@media(max-width:600px){.formgrid{grid-template-columns:1fr}.span2{grid-column:auto}}
+</style>
+</head>
+<body>
+<section id="loginView" class="login">
+ <div class="loginbox"><h1>Admin</h1><p>SSH Educational Materials 管理画面</p>
+ <form id="loginForm"><div class="field"><label>管理パスワード</label><input id="password" type="password" inputmode="numeric" required></div>
+ <button class="btn primary" style="width:100%">ログイン</button><div id="loginMsg" class="msg"></div></form></div>
+</section>
+
+<div id="appView" class="hidden">
+<header class="top"><div class="topin"><strong>SSH Educational Materials Admin</strong>
+ <div class="actions"><a id="folderLink" class="btn ghost small" href="#" target="_blank">Driveフォルダ</a><button id="reloadBtn" class="btn ghost small">再読込</button><button id="logoutBtn" class="btn ghost small">ログアウト</button></div>
+</div></header>
+<main class="wrap">
+ <div id="metrics" class="metrics"></div>
+ <nav class="tabs"><button class="tab active" data-tab="materials">公開資料</button><button class="tab" data-tab="editor">編集・追加</button><button class="tab" data-tab="settings">サイト設定</button><button class="tab" data-tab="logs">アクセスログ</button></nav>
+
+ <section id="tab-materials" class="tabpage">
+  <div class="section"><div class="shead"><div><h2>公開資料マスタ</h2><p class="sub">公開/非公開、説明、プレビュー、ダウンロード先をここで管理します。</p></div>
+   <div class="toolbar"><button id="syncBtn" class="btn secondary small">Driveを同期</button><button id="newBtn" class="btn primary small">URL資料を追加</button></div></div>
+   <div class="tablewrap"><table><thead><tr><th>公開</th><th>順</th><th>タイトル</th><th>種別</th><th>閲覧</th><th>Preview</th><th>DL</th><th>Open</th><th>操作</th></tr></thead><tbody id="materialsBody"></tbody></table></div>
+  </div>
+  <div class="section"><div class="shead"><div><h2>Driveフォルダ検出結果</h2><p id="driveSummary" class="sub"></p></div></div>
+   <div class="tablewrap"><table><thead><tr><th>ファイル名</th><th>MIME</th><th>フォルダ</th><th>更新</th><th>Drive ID</th></tr></thead><tbody id="driveBody"></tbody></table></div>
+  </div>
+ </section>
+
+ <section id="tab-editor" class="tabpage hidden">
+  <div class="editor">
+   <div class="section"><div class="shead"><div><h2 id="editorTitle">資料を編集</h2><p class="sub">公開カードとプレビューを設定します。</p></div></div>
+    <form id="materialForm">
+     <input id="mId" type="hidden"><input id="mSourceKind" type="hidden"><input id="mDriveFileId" type="hidden"><input id="mMimeType" type="hidden">
+     <div class="formgrid">
+      <div class="field"><label>表示順</label><input id="mOrder" type="number" value="100"></div>
+      <div class="field"><label>種別</label><select id="mType" required></select></div>
+      <div class="field span2"><label>タイトル</label><input id="mTitle" required></div>
+      <div class="field span2"><label>説明コメント</label><textarea id="mDescription"></textarea></div>
+      <div class="field span2"><label>キーワード</label><input id="mKeywords" placeholder="例: 化学 / GAS / 実験"></div>
+      <div class="field"><label>ファイル名</label><input id="mFileName"></div>
+      <div class="field"><label>プレビュー高さ(px)</label><input id="mPreviewHeight" type="number" min="240" max="900" value="440"></div>
+      <div class="field span2"><label>元URL</label><input id="mSourceUrl" type="url" placeholder="https://..."></div>
+      <div class="field span2"><label>アクションURL</label><input id="mActionUrl" type="url" placeholder="ダウンロード先 / 開くURL"></div>
+      <div class="field"><label>主ボタン動作</label><select id="mActionMode"><option value="download">ダウンロード</option><option value="open">開く</option></select></div>
+      <div class="field"><label>ボタン表示</label><input id="mActionLabel" placeholder="ダウンロード / フォームを開く"></div>
+      <div class="field span2"><label>プレビューURL</label><input id="mPreviewUrl" type="url" placeholder="https://.../preview"></div>
+     </div>
+     <div class="checks"><label><input id="mPublished" type="checkbox"> 公開する</label><label><input id="mPreviewEnabled" type="checkbox"> プレビュー枠を表示する</label></div>
+     <div class="toolbar"><button class="btn primary" type="submit">保存</button><button id="defaultsBtn" class="btn secondary" type="button">URLを自動補完</button><button id="testPreviewBtn" class="btn ghost" type="button">プレビュー確認</button><button id="deleteBtn" class="btn danger hidden" type="button">登録を削除</button></div>
+    </form>
+   </div>
+   <div class="section"><div class="shead"><div><h2>プレビュー確認</h2><p class="sub">実際のiframe表示を確認します。</p></div></div>
+    <div class="previewbox"><div id="previewStatus" class="previewhead">プレビューURLを設定してください。</div><iframe id="previewFrame"></iframe></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="tab-settings" class="tabpage hidden"><div class="section"><div class="shead"><div><h2>公開サイト設定</h2><p class="sub">GitHub側を書き換えずに見出し・説明を変更できます。</p></div></div>
+  <form id="settingsForm"><div class="field"><label>サイトタイトル</label><input id="sSiteTitle"></div><div class="field"><label>サブタイトル</label><textarea id="sSiteSubtitle"></textarea></div><div class="field"><label>説明欄タイトル</label><input id="sIntroTitle"></div><div class="field"><label>説明本文</label><textarea id="sIntroText"></textarea></div><div class="field"><label>フッター</label><input id="sFooterText"></div><button class="btn primary">保存</button></form>
+ </div></section>
+
+ <section id="tab-logs" class="tabpage hidden"><div class="section"><div class="shead"><div><h2>アクセスログ</h2><p class="sub">最新80件。全件は指定スプレッドシートに保存します。</p></div><button id="rebuildBtn" class="btn secondary small">集計を再構築</button></div>
+  <div class="tablewrap"><table><thead><tr><th>日時</th><th>イベント</th><th>資料</th><th>ファイル</th><th>ページ</th></tr></thead><tbody id="logsBody"></tbody></table></div>
+ </div></section>
+</main>
+</div>
+<div id="toast" class="toast hidden"></div>
+
+<script>
+let token='',data={materials:[],driveFiles:[],stats:{},siteStats:{},settings:{},types:[],recentLogs:[]};
+const $=id=>document.getElementById(id),esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;'),num=v=>Number(v||0).toLocaleString('ja-JP');
+function call(fn,...args){return new Promise((ok,ng)=>google.script.run.withSuccessHandler(ok).withFailureHandler(e=>ng(new Error(e.message||e)))[fn](...args))}
+function note(x){$('toast').textContent=x;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2500)}
+function error(e){console.error(e);note(e.message||String(e))}
+$('loginForm').onsubmit=async e=>{e.preventDefault();$('loginMsg').textContent='';try{const r=await call('adminLogin',$('password').value);token=r.token;sessionStorage.setItem('sshAdminToken',token);$('folderLink').href=r.folderUrl;$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');await reload()}catch(x){$('loginMsg').textContent=x.message}};
+async function reload(){try{data=await call('adminGetDashboard',token);renderAll()}catch(e){if(/セッション/.test(e.message)){sessionStorage.removeItem('sshAdminToken');location.reload()}else error(e)}}
+function renderAll(){renderMetrics();renderMaterials();renderDrive();renderSettings();renderLogs();buildTypes();$('folderLink').href=data.folderUrl||'#'}
+function renderMetrics(){const a=Object.values(data.stats||{}),pub=data.materials.filter(x=>x.published).length;
+ $('metrics').innerHTML=[['サイト閲覧',data.siteStats.siteViews],['公開資料',pub],['資料閲覧',a.reduce((s,x)=>s+Number(x.views||0),0)],['プレビュー',a.reduce((s,x)=>s+Number(x.previewViews||0),0)],['ダウンロード',a.reduce((s,x)=>s+Number(x.downloads||0),0)]].map(x=>`<div class="metric"><small>${x[0]}</small><strong>${num(x[1])}</strong></div>`).join('')}
+function renderMaterials(){$('materialsBody').innerHTML=data.materials.slice().sort((a,b)=>Number(a.order)-Number(b.order)||a.title.localeCompare(b.title,'ja')).map(m=>{const s=data.stats[m.id]||{};return`<tr><td><span class="pill ${m.published?'on':''}">${m.published?'公開':'非公開'}</span></td><td>${num(m.order)}</td><td class="truncate" title="${esc(m.title)}">${esc(m.title)}</td><td>${esc(m.type)}</td><td>${num(s.views)}</td><td>${num(s.previewViews)}</td><td>${num(s.downloads)}</td><td>${num(s.opens)}</td><td><button class="btn secondary small" data-edit="${esc(m.id)}">編集</button></td></tr>`}).join('');
+ document.querySelectorAll('[data-edit]').forEach(b=>b.onclick=()=>edit(b.dataset.edit))}
+function renderDrive(){$('driveSummary').textContent=`検出 ${data.driveFiles.length} ファイル。新規ファイルは同期時に非公開で登録します。`;
+ $('driveBody').innerHTML=data.driveFiles.map(f=>`<tr><td>${esc(f.fileName)}</td><td>${esc(f.mimeType)}</td><td>${esc(f.folderPath)}</td><td>${esc(f.updatedAt)}</td><td class="truncate">${esc(f.driveFileId)}</td></tr>`).join('')}
+function buildTypes(){const cur=$('mType').value;$('mType').innerHTML='<option value="">選択</option>'+data.types.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join('');if(cur)$('mType').value=cur}
+function renderSettings(){const s=data.settings||{};$('sSiteTitle').value=s.siteTitle||'';$('sSiteSubtitle').value=s.siteSubtitle||'';$('sIntroTitle').value=s.introTitle||'';$('sIntroText').value=s.introText||'';$('sFooterText').value=s.footerText||''}
+function renderLogs(){$('logsBody').innerHTML=(data.recentLogs||[]).map(x=>`<tr><td>${esc(x.timestamp)}</td><td>${esc(x.event)}</td><td>${esc(x.title||x.materialId)}</td><td>${esc(x.fileName)}</td><td class="truncate" title="${esc(x.pageUrl)}">${esc(x.pageUrl)}</td></tr>`).join('')}
+function tab(name){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.tab===name));document.querySelectorAll('.tabpage').forEach(x=>x.classList.add('hidden'));$('tab-'+name).classList.remove('hidden')}
+document.querySelectorAll('.tab').forEach(x=>x.onclick=()=>tab(x.dataset.tab));
+function blank(){return{id:'',published:false,order:100,title:'',type:'',description:'',keywords:'',sourceKind:'external',driveFileId:'',fileName:'',sourceUrl:'',actionUrl:'',actionMode:'open',actionLabel:'開く',previewEnabled:true,previewUrl:'',previewHeight:440,mimeType:''}}
+function edit(id){const m=data.materials.find(x=>x.id===id)||blank();buildTypes();$('mId').value=m.id||'';$('mSourceKind').value=m.sourceKind||'external';$('mDriveFileId').value=m.driveFileId||'';$('mMimeType').value=m.mimeType||'';$('mOrder').value=m.order||100;$('mType').value=m.type||'';$('mTitle').value=m.title||'';$('mDescription').value=m.description||'';$('mKeywords').value=m.keywords||'';$('mFileName').value=m.fileName||'';$('mSourceUrl').value=m.sourceUrl||'';$('mActionUrl').value=m.actionUrl||'';$('mActionMode').value=m.actionMode||'open';$('mActionLabel').value=m.actionLabel||'';$('mPreviewEnabled').checked=!!m.previewEnabled;$('mPreviewUrl').value=m.previewUrl||'';$('mPreviewHeight').value=m.previewHeight||440;$('mPublished').checked=!!m.published;$('editorTitle').textContent=m.id?'資料を編集':'URL資料を追加';$('deleteBtn').classList.toggle('hidden',!m.id);$('previewFrame').removeAttribute('src');$('previewStatus').textContent='「プレビュー確認」を押してください。';tab('editor')}
+function formData(){return{id:$('mId').value,published:$('mPublished').checked,order:Number($('mOrder').value||0),title:$('mTitle').value,type:$('mType').value,description:$('mDescription').value,keywords:$('mKeywords').value,sourceKind:$('mSourceKind').value||'external',driveFileId:$('mDriveFileId').value,fileName:$('mFileName').value,sourceUrl:$('mSourceUrl').value,actionUrl:$('mActionUrl').value,actionMode:$('mActionMode').value,actionLabel:$('mActionLabel').value,previewEnabled:$('mPreviewEnabled').checked,previewUrl:$('mPreviewUrl').value,previewHeight:Number($('mPreviewHeight').value||440),mimeType:$('mMimeType').value}}
+$('materialForm').onsubmit=async e=>{e.preventDefault();try{await call('adminSaveMaterial',token,formData());note('保存しました');await reload();tab('materials')}catch(x){error(x)}};
+$('defaultsBtn').onclick=async()=>{try{const r=await call('adminPreviewDefaults',token,formData());if(!$('mActionUrl').value)$('mActionUrl').value=r.actionUrl||'';if(!$('mPreviewUrl').value)$('mPreviewUrl').value=r.previewUrl||'';if(!$('mActionLabel').value)$('mActionLabel').value=r.actionLabel||'';if(r.actionMode)$('mActionMode').value=r.actionMode;note('URL候補を補完しました')}catch(x){error(x)}};
+$('testPreviewBtn').onclick=()=>{const u=$('mPreviewUrl').value.trim();if(!u){$('previewStatus').textContent='プレビューURLがありません';return}$('previewStatus').textContent=u;$('previewFrame').src=u};
+$('deleteBtn').onclick=async()=>{if(!confirm('登録を削除します。Drive上のファイルは削除しません。'))return;try{await call('adminDeleteMaterial',token,$('mId').value);note('登録を削除しました');await reload();tab('materials')}catch(x){error(x)}};
+$('newBtn').onclick=()=>edit('');
+$('syncBtn').onclick=async()=>{try{const r=await call('adminSyncDrive',token);note(`Drive同期: 新規 ${r.added} / 更新 ${r.updated}`);await reload()}catch(x){error(x)}};
+$('reloadBtn').onclick=reload;$('logoutBtn').onclick=async()=>{try{await call('adminLogout',token)}catch(e){}sessionStorage.removeItem('sshAdminToken');location.reload()};
+$('settingsForm').onsubmit=async e=>{e.preventDefault();try{data.settings=await call('adminSaveSettings',token,{siteTitle:$('sSiteTitle').value,siteSubtitle:$('sSiteSubtitle').value,introTitle:$('sIntroTitle').value,introText:$('sIntroText').value,footerText:$('sFooterText').value});note('サイト設定を保存しました')}catch(x){error(x)}};
+$('rebuildBtn').onclick=async()=>{try{await call('adminRebuildStats',token);note('集計を再構築しました');await reload()}catch(x){error(x)}};
+const saved=sessionStorage.getItem('sshAdminToken');if(saved){token=saved;$('loginView').classList.add('hidden');$('appView').classList.remove('hidden');reload()}
+</script>
+</body></html>

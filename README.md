@@ -1,138 +1,265 @@
-# SSH Educational Materials Website
+# SSH Educational Materials Portal v2
 
-GitHub Pagesで公開する、SSH教育・研究支援資料ポータルです。
+GitHub Pagesを公開サイト、Google Apps Scriptを「管理画面・Drive同期・アクセスログ・集計」のバックエンドとして使う構成です。
 
-## 収録ファイル
+## 主な機能
 
-- `index.html`
-  - 公開ページ本体
-  - 資料一覧、検索、カテゴリ絞り込み
-  - サイト閲覧数、資料閲覧数、ダウンロード数表示
-  - Google Drive直リンク対応
-- `assets/files/実験ツール貸出管理_返却修正版.js`
-  - 最初の公開資料
+公開ページ:
+- Adminボタン
+- Adminで公開設定した資料だけを表示
+- 種別: PDF / Google Apps Script / Google Form / Spreadsheet / GitHub HP
+- 資料ごとの説明コメント
+- 資料ごとの閲覧数・ダウンロード数
+- 資料ごとのプレビュー
+- 検索・種別絞り込み
+
+Admin:
+- パスワード認証
+- Google Driveフォルダ同期
+- 公開 / 非公開
+- 表示順
+- タイトル
+- 種別
+- 説明コメント
+- キーワード
+- 元URL
+- ダウンロード / 外部オープンURL
+- ボタン表示
+- プレビュー有効 / 無効
+- プレビューURL
+- プレビュー高さ
+- 公開サイトのタイトル・説明文
+- サイト閲覧数
+- 資料閲覧数
+- プレビュー回数
+- ダウンロード数
+- 外部オープン数
+- 最新アクセスログ
+
+## 使用するGoogleリソース
+
+### 管理・ログ用スプレッドシート
+
+`Code.gs` に設定済みです。
+
+`1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE`
+
+以下のシートを追加・利用します。
+
+- 公開資料
+- アクセスログ
+- アクセス集計
+- サイト集計
+- サイト設定
+
+既存の `アクセスログ` は `setupPortal()` で消去しません。
+
+### 公開ファイル用Google Driveフォルダ
+
+`Code.gs` に設定済みです。
+
+`16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2`
+
+Adminの「Driveを同期」でサブフォルダまで検索します。
+新しく検出したファイルは **非公開** で資料マスタに追加します。
+Adminで説明・プレビュー等を確認してから「公開する」をONにしてください。
+
+---
+
+# 初回設定
+
+## 1. Apps Scriptに2ファイルを作る
+
+GASプロジェクトに:
+
+- `Code.gs`
+- HTMLファイル `Admin`
+
+を作ります。
+
+このZIPの:
+
 - `gas/Code.gs`
-  - Google Apps Script側のアクセスログ記録・集計API
-- `upload_to_github.cmd`
-  - WindowsからGitHubへアップロードするためのCMD
+- `gas/Admin.html`
 
-## 1. GASを設定する
+をそれぞれ貼り付けます。
 
-1. Google Apps Scriptで新しいプロジェクトを作成します。
-2. `gas/Code.gs` の内容を貼り付けます。
-3. `setupAccessLogSheet()` を一度実行し、権限を許可します。
-4. 「デプロイ」→「新しいデプロイ」→「ウェブアプリ」を選択します。
-5. 実行するユーザーは自分、アクセスできるユーザーは公開サイトから呼び出せる設定にします。
-6. 発行された `/exec` URLをコピーします。
-7. `index.html` の次の行を置き換えます。
+## 2. Adminパスワードを設定
 
-```js
-const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID/exec';
+パスワードを公開GitHubへ書かないため、コードには `5801` を埋め込んでいません。
+
+Apps Script:
+
+`Project Settings → Script Properties`
+
+で追加します。
+
+- Property: `ADMIN_PASSWORD`
+- Value: `5801`
+
+## 3. setupPortal() を一度実行
+
+Apps Scriptエディタで:
+
+```javascript
+setupPortal()
 ```
 
-記録先スプレッドシートIDは、`gas/Code.gs` に設定済みです。
+を一度実行し、Google DriveとSpreadsheetへのアクセス権限を許可します。
 
-## 2. Google Drive上のPDF等を追加する
+初期データとして:
 
-`index.html` の `MATERIALS` 配列へ資料を追加します。
+- 実験ツール貸出管理システム（返却処理修正版）: 公開
+- 提示されたGoogle Formプレビュー例: 非公開
 
-```js
-{
-  id: 'chemistry-material-001',
-  title: '資料タイトル',
-  category: '化学',
-  type: 'PDF',
-  version: '2026-08-20',
-  fileName: 'sample.pdf',
-  description: '資料の説明。',
-  keywords: ['化学', '実験'],
-  driveFileId: 'GOOGLE_DRIVE_FILE_ID',
-  downloadUrl: ''
-}
-```
+を登録します。
 
-Google DriveファイルURLが
+Google Form例:
 
 ```text
-https://drive.google.com/file/d/1AbCdEfGhIjKlMnOp/view
+https://docs.google.com/forms/d/1qW8XNY0Or272UG40cMuykOFQQ47p1hp6QgkK5pjwKEk/preview
 ```
 
-なら、`driveFileId` は
+## 4. GASをWebアプリとしてデプロイ
 
+Apps Script:
+
+`Deploy → New deployment → Web app`
+
+公開サイトからアクセスできる設定でデプロイします。
+
+発行された `/exec` URLをコピーしてください。
+
+## 5. index.htmlへGAS URLを設定
+
+`index.html` の:
+
+```javascript
+const GAS_WEB_APP_URL =
+  'https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID/exec';
+```
+
+を実際の `/exec` URLへ変更します。
+
+これで公開ページ右上の **Admin** ボタンも自動的に管理画面へつながります。
+
+---
+
+# Adminの使い方
+
+## Driveを同期
+
+「Driveを同期」を押します。
+
+指定Driveフォルダ内のファイルを再帰的に取得します。
+
+自動判定:
+- `.pdf` → PDF
+- Google Form → Google Form
+- Google Spreadsheet → Spreadsheet
+- Google Apps Script / `.gs` / `.js` → Google Apps Script
+
+未対応形式は種別が空欄になるため、Adminの編集画面で種別を設定してください。
+
+## URL資料を追加
+
+GitHub Pages等は「URL資料を追加」から追加します。
+
+種別:
+
+`GitHub HP`
+
+元URL・アクションURL・プレビューURLに対象URLを設定します。
+
+## プレビュー
+
+自動候補:
+
+PDF等:
 ```text
-1AbCdEfGhIjKlMnOp
+https://drive.google.com/file/d/FILE_ID/preview
 ```
 
-です。
+Google Form:
+```text
+https://docs.google.com/forms/d/FORM_ID/preview
+```
 
-ページ側で次の直接ダウンロードURLを自動生成します。
+Spreadsheet:
+```text
+https://docs.google.com/spreadsheets/d/SHEET_ID/preview
+```
 
+GitHub HP:
+```text
+対象HPのURL
+```
+
+すべてAdminから上書きできます。
+
+外部サイト側がiframeを禁止している場合は、その資料の
+「プレビュー枠を表示する」をOFFにしてください。
+
+## ダウンロード
+
+PDF:
 ```text
 https://drive.google.com/uc?export=download&id=FILE_ID
 ```
 
-Google Drive側の共有設定も、想定する利用者が閲覧できる状態にしてください。
-
-## 3. GitHubへアップロードする
-
-このフォルダ内の
-
+Spreadsheet:
 ```text
-upload_to_github.cmd
+https://docs.google.com/spreadsheets/d/FILE_ID/export?format=xlsx
 ```
 
-をダブルクリックします。
+Google FormやGitHub HP等は「開く」を使用できます。
 
-このCMDは、既存のGitHubリポジトリを最初にcloneしてからファイルを上書きコピーするため、
-既存リポジトリを強制的に初期化する方式ではありません。
+Google Apps Scriptについて:
+- `.gs` / `.js` としてDriveに保存したファイルはダウンロードURLを自動生成
+- Google Apps Scriptのネイティブプロジェクトは元URLを開く設定を基本とする
 
-対象リポジトリ:
+---
 
-```text
-https://github.com/szkssh00-bit/ssh_educational_materials
-```
+# アクセス計測
 
-## 4. GitHub Pagesを有効化する
+ログイベント:
 
-GitHubのリポジトリ画面で
+- `page_view`: サイト閲覧
+- `material_view`: 資料カード閲覧
+- `preview_open`: プレビュー表示
+- `download`: ダウンロード
+- `open`: Google FormやGitHub HP等の外部オープン
 
-```text
-Settings → Pages
-```
+公開サイトでは:
+- 閲覧数
+- DL数
 
-を開き、GitHub Pagesの公開元をリポジトリの既定ブランチのルートに設定します。
+を表示します。
 
-公開URLは通常、次の形式になります。
+Adminでは全指標を表示します。
 
-```text
-https://szkssh00-bit.github.io/ssh_educational_materials/
-```
+アクセスの生ログは指定スプレッドシートの `アクセスログ` に残します。
 
-## 5. ログの内容
+---
 
-スプレッドシートに `アクセスログ` シートを自動作成し、次を記録します。
+# Drive共有権限について
 
-- 日時
-- イベント
-  - `page_view`
-  - `material_view`
-  - `download`
-- 資料ID
-- 資料名
-- ファイル名
-- ページURL
-- 参照元
+GASがファイルを検出できても、公開サイトの閲覧者にDriveファイルの閲覧権限がなければ、
+プレビューやダウンロードはできません。
 
-個人名、メールアドレス、IPアドレスは記録しません。
+公開対象のファイルは、想定する閲覧者がアクセスできる共有設定にしてください。
 
-## 6. 集計の考え方
+---
 
-- サイト閲覧数:
-  - ページが読み込まれるたびに `page_view`
-- 資料閲覧数:
-  - 資料カードの50%以上が画面内に入ったときに `material_view`
-  - 同一タブの同一セッション中は、同じ資料を重複加算しません
-- ダウンロード数:
-  - ダウンロードボタンを押したときに `download`
+# パスワードについて
 
-GASの `mode=stats` で累積値を集計し、GitHub Pages側へJSONP形式で返します。
+指定どおり `5801` を利用できます。
+
+ただし4桁パスワードは管理画面の認証としては強くありません。
+後から変更する場合、GitHubのHTMLを変更する必要はありません。
+
+Apps Scriptの:
+
+`Project Settings → Script Properties → ADMIN_PASSWORD`
+
+だけを変更してください。
