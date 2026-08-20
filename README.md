@@ -1,18 +1,30 @@
-# SSH Educational Materials Portal v4
+# SSH Educational Materials Portal v5
 
-## 運用方針
+## 変更点
 
-公開ページ本体はGitHub Pagesで公開しますが、**公開資料ファイル自体はGitHubへ置きません**。
+v5では、公開資料を単発カードとして並べる方式をやめ、**パッケージ単位**で公開します。
 
-資料は原則として次のGoogle Driveフォルダへ保存します。
+例:
 
-```text
-https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
-```
+### 実験ツール貸出管理システム
+- 実験ツール貸出・返却フォーム
+- 実験ツール貸出管理台帳
+- Google Apps Script本体
+- 将来追加する説明PDF等
 
-Adminの「Driveを同期」で資料マスタへ登録し、Adminから公開/非公開、説明、プレビュー等を設定します。
+### SKYSEF 2026
+- SKYSEF Webサイト
+- 将来追加する募集要項・プログラム・PDF等
+
+関連資料は同じ大きなカードの中にまとめて表示されます。
 
 ## Admin
+
+URL:
+
+```text
+https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec?page=admin
+```
 
 パスワード:
 
@@ -20,96 +32,67 @@ Adminの「Driveを同期」で資料マスタへ登録し、Adminから公開/�
 5801
 ```
 
-Adminアクセス時および `setupPortal()` 実行時に、GASがScript Propertiesの `ADMIN_PASSWORD` を `5801` に設定します。
+`ADMIN_PASSWORD` がScript Propertiesに存在しない場合も、GASが自動で `5801` を設定します。
 
-したがって `ADMIN_PASSWORD が設定されていません` というエラーはv4では発生しません。
+## Adminでできること
 
-## 初期登録するプレビュー
+### パッケージ
+- 公開 / 非公開
+- 表示順
+- パッケージ名
+- 説明
+- キーワード
+- パッケージ削除
 
-### Google Form
+### 資料
+- 所属パッケージ
+- 公開 / 非公開
+- 表示順
+- タイトル
+- 種別
+- 説明コメント
+- キーワード
+- Driveファイル
+- 元URL
+- アクションURL
+- ダウンロード / 開く
+- プレビューON/OFF
+- プレビューURL
+- プレビュー高さ
+
+## Google Drive
+
+公開資料ファイルはGitHubではなく次のDriveフォルダを使用します。
+
+```text
+https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
+```
+
+Adminの「Driveを同期」で検出します。
+
+`実験ツール貸出管理_返却修正版.js` など、ファイル名に「実験ツール貸出管理」「貸出管理」等が含まれるDriveファイルは、自動的に `実験ツール貸出管理システム` パッケージへ割り当てます。
+
+## 初期パッケージ
+
+### 実験ツール貸出管理システム
+
+Google Form:
 
 ```text
 https://docs.google.com/forms/d/1qW8XNY0Or272UG40cMuykOFQQ47p1hp6QgkK5pjwKEk/preview
 ```
 
-公開: ON  
-プレビュー: ON
-
-### Google Spreadsheet
-
-元URL:
+Spreadsheet:
 
 ```text
 https://docs.google.com/spreadsheets/d/1YOHteYmQ5jSFrfC0few4639s-RPDDC0FxZLMHmRo_yQ/edit?gid=1863612530#gid=1863612530
 ```
 
-プレビュー:
-
-```text
-https://docs.google.com/spreadsheets/d/1YOHteYmQ5jSFrfC0few4639s-RPDDC0FxZLMHmRo_yQ/preview?gid=1863612530
-```
-
-主ボタンはExcel形式ダウンロードです。
-
-### SKYSEF HP
+### SKYSEF 2026
 
 ```text
 https://szkssh00-bit.github.io/SKYSEF/#top
 ```
-
-公開: ON  
-プレビュー: ON
-
-GitHub Pagesサイト側のiframe制限がなければ、サイト内プレビューとして表示します。
-
-## 実験ツール貸出管理システム
-
-旧GitHub公開版:
-
-```text
-assets/files/実験ツール貸出管理_返却修正版.js
-```
-
-は公開資料マスタから自動削除します。
-
-今後は `実験ツール貸出管理_返却修正版.js` をGoogle Driveの公開ファイル用フォルダへアップロードし、Adminの「Driveを同期」を押してください。
-
-このZIPには、Driveへ手動アップロードしやすいように:
-
-```text
-drive_upload/実験ツール貸出管理_返却修正版.js
-```
-
-を含めています。
-
-## 閲覧数
-
-公開ページには資料ごとに:
-
-- 閲覧
-- DL
-- Open
-
-を表示します。
-
-AdminではさらにPreview回数も確認できます。
-
-## GitHubへ公開されるもの
-
-v4のデプロイCMDはGitHubへ:
-
-- `index.html`
-- `README.md`
-
-だけを反映します。
-
-以下はGitHubへ公開しません。
-
-- `gas/`
-- `drive_upload/`
-- 公開資料ファイル
-
-GASはclaspで直接Apps Scriptへpushします。
 
 ## 固定GAS
 
@@ -124,3 +107,23 @@ Web App:
 ```text
 https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec
 ```
+
+## GitHubへ公開するもの
+
+- `index.html`
+- `README.md`
+
+GASソース、Adminソース、資料ファイルはGitHubへ公開しません。
+
+## デプロイ
+
+同じフォルダに:
+
+```text
+ssh_educational_materials_portal_v5.zip
+deploy_portal_v5.cmd
+```
+
+を置き、CMDを実行します。
+
+GitHub更新、GAS push、既存Webアプリ再デプロイ、公開API/Adminの検証まで一括実行します。
