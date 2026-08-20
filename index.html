@@ -85,7 +85,7 @@ function render(){
   </div>
   ${pv?`<div class="previewbar"><button class="previewbtn" data-p="${esc(m.id)}">プレビューを表示</button><small>iframe preview</small></div>
   <iframe class="preview" data-f="${esc(m.id)}" data-src="${esc(m.previewUrl)}" height="${Number(m.previewHeight||440)}" loading="lazy" allow="fullscreen"></iframe>`:''}
-  <div class="foot"><div class="counts"><span>閲覧 ${num(s.views)}</span><span>DL ${num(s.downloads)}</span></div>
+  <div class="foot"><div class="counts"><span>閲覧 ${num(s.views)}</span><span>DL ${num(s.downloads)}</span><span>Open ${num(s.opens)}</span></div>
   ${m.actionUrl?`<a class="btn" data-a="${esc(m.id)}" href="${esc(m.actionUrl)}" target="_blank" rel="noopener">${esc(m.actionLabel||'開く')}</a>`:''}</div></article>`;
  }).join('');
  document.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{
