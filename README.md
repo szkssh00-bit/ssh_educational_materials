@@ -1,26 +1,91 @@
-# SSH Educational Materials Portal v5
+# SSH Educational Materials Portal v6
 
-## 変更点
+## v6の管理方針
 
-v5では、公開資料を単発カードとして並べる方式をやめ、**パッケージ単位**で公開します。
+v6ではデータの流れを一本化しました。
 
-例:
+```text
+Google Drive
+    ↓ Adminログイン時 / Drive同期ボタン
+管理Spreadsheet
+    ↓
+Adminで編集・保存
+    ↓
+管理Spreadsheet
+    ↓
+公開Portal
+```
+
+公開PortalはGoogle Driveを直接読みません。
+**管理Spreadsheetを唯一の公開マスタ**として使用します。
+
+## 管理Spreadsheet
+
+```text
+https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
+```
+
+主に次のシートを使用します。
+
+- `公開パッケージ`
+- `公開資料`
+- `アクセスログ`
+- `アクセス集計`
+- `サイト集計`
+- `サイト設定`
+- `Drive同期履歴`
+
+Adminで保存するとこのSpreadsheetへ即時書き込みます。
+
+## Google Drive
+
+同期元:
+
+```text
+https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
+```
+
+Adminを開くたびに自動同期します。
+必要なときはAdmin上部または資料タブの「Drive同期」を押して手動同期できます。
+
+### Drive同期で行うこと
+
+- サブフォルダを含めて再帰検索
+- PDF検出
+- `.gs` / `.js` 検出
+- Google Form検出
+- Google Spreadsheet検出
+- Google Driveショートカットを実体IDへ解決
+- ファイル名更新
+- MIMEタイプ更新
+- Driveパス保存
+- Drive更新日時保存
+- 最終同期時刻保存
+- Driveから見つからなくなった資料を `MISSING` として表示
+- 新規Driveファイルは非公開で登録
+
+ショートカットの場合も、対象ファイルのIDとMIMEタイプを取得して管理します。
+
+## パッケージ
+
+関連資料は大きなパッケージ単位で表示します。
 
 ### 実験ツール貸出管理システム
+
 - 実験ツール貸出・返却フォーム
 - 実験ツール貸出管理台帳
-- Google Apps Script本体
-- 将来追加する説明PDF等
+- Google Apps Script
+- 説明PDF等
 
 ### SKYSEF 2026
-- SKYSEF Webサイト
-- 将来追加する募集要項・プログラム・PDF等
 
-関連資料は同じ大きなカードの中にまとめて表示されます。
+- SKYSEF Webサイト
+- 今後追加するPDF・プログラム等
+
+Driveサブフォルダを使った場合は、そのサブフォルダ名から非公開パッケージを自動生成します。
+Adminで確認して公開できます。
 
 ## Admin
-
-URL:
 
 ```text
 https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec?page=admin
@@ -32,67 +97,12 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 5801
 ```
 
-`ADMIN_PASSWORD` がScript Propertiesに存在しない場合も、GASが自動で `5801` を設定します。
+Admin上部から直接、
 
-## Adminでできること
+- Driveフォルダ
+- 管理Spreadsheet
 
-### パッケージ
-- 公開 / 非公開
-- 表示順
-- パッケージ名
-- 説明
-- キーワード
-- パッケージ削除
-
-### 資料
-- 所属パッケージ
-- 公開 / 非公開
-- 表示順
-- タイトル
-- 種別
-- 説明コメント
-- キーワード
-- Driveファイル
-- 元URL
-- アクションURL
-- ダウンロード / 開く
-- プレビューON/OFF
-- プレビューURL
-- プレビュー高さ
-
-## Google Drive
-
-公開資料ファイルはGitHubではなく次のDriveフォルダを使用します。
-
-```text
-https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
-```
-
-Adminの「Driveを同期」で検出します。
-
-`実験ツール貸出管理_返却修正版.js` など、ファイル名に「実験ツール貸出管理」「貸出管理」等が含まれるDriveファイルは、自動的に `実験ツール貸出管理システム` パッケージへ割り当てます。
-
-## 初期パッケージ
-
-### 実験ツール貸出管理システム
-
-Google Form:
-
-```text
-https://docs.google.com/forms/d/1qW8XNY0Or272UG40cMuykOFQQ47p1hp6QgkK5pjwKEk/preview
-```
-
-Spreadsheet:
-
-```text
-https://docs.google.com/spreadsheets/d/1YOHteYmQ5jSFrfC0few4639s-RPDDC0FxZLMHmRo_yQ/edit?gid=1863612530#gid=1863612530
-```
-
-### SKYSEF 2026
-
-```text
-https://szkssh00-bit.github.io/SKYSEF/#top
-```
+を開けます。
 
 ## 固定GAS
 
@@ -108,22 +118,23 @@ Web App:
 https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec
 ```
 
-## GitHubへ公開するもの
-
-- `index.html`
-- `README.md`
-
-GASソース、Adminソース、資料ファイルはGitHubへ公開しません。
-
 ## デプロイ
 
 同じフォルダに:
 
 ```text
-ssh_educational_materials_portal_v5.zip
-deploy_portal_v5.cmd
+ssh_educational_materials_portal_v6.zip
+deploy_portal_v6.cmd
 ```
 
 を置き、CMDを実行します。
 
-GitHub更新、GAS push、既存Webアプリ再デプロイ、公開API/Adminの検証まで一括実行します。
+CMDは:
+
+1. GitHub更新
+2. GAS push
+3. 既存Web App再デプロイ
+4. public_data API確認
+5. Admin画面確認
+
+を行います。
