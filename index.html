@@ -399,20 +399,11 @@
           プログラム、PDF、授業・研究支援資料などを順次追加します。
         </p>
         <p class="mini-note">
-          PDF等はGoogle Drive上の公開ファイルへ直接リンクできます。ダウンロード操作はGASを経由して
-          Googleスプレッドシートへ記録されます。
         </p>
       </div>
 
       <div class="panel">
-        <h2>アクセス計測</h2>
-        <p>
-          ページ閲覧、各資料の閲覧、ダウンロードを記録します。
-          個人名・メールアドレス・IPアドレスは記録しない設計です。
-        </p>
-        <p class="mini-note" id="analyticsStatus">
-          <span class="status-dot"></span>集計設定を確認中
-        </p>
+       
       </div>
     </section>
 
@@ -443,7 +434,6 @@
   <footer>
     <div class="container">
       <span>SSH Educational Materials</span>
-      <span>最終更新: 2026-08-20</span>
     </div>
   </footer>
 
@@ -455,7 +445,7 @@
      * gas/Code.gs をGASに設置して「ウェブアプリ」としてデプロイ後、
      * 発行された /exec のURLに置き換えてください。
      */
-    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID/exec';
+    const GAS_WEB_APP_URL = 'https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec';
 
     /*
      * ============================================================
@@ -478,7 +468,6 @@
         title: '実験ツール貸出管理システム（返却処理修正版）',
         category: '校務・研究支援',
         type: 'JavaScript / Google Apps Script',
-        version: '2026-08-20',
         fileName: '実験ツール貸出管理_返却修正版.js',
         description:
           'GoogleフォームとGoogleスプレッドシートを連携し、実験ツールの貸出・返却を一元管理するスクリプトです。' +
