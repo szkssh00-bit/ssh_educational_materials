@@ -1,89 +1,18 @@
-# SSH Educational Materials Portal v6
+# SSH Educational Materials Portal v7
 
-## v6の管理方針
+## 今回の修正点
 
-v6ではデータの流れを一本化しました。
+v7では、Adminが「0件」のままになる原因を判別できるように、
+Google OAuth認証と接続テストをAdmin画面に組み込みました。
 
-```text
-Google Drive
-    ↓ Adminログイン時 / Drive同期ボタン
-管理Spreadsheet
-    ↓
-Adminで編集・保存
-    ↓
-管理Spreadsheet
-    ↓
-公開Portal
-```
+Adminログイン後に次を個別確認します。
 
-公開PortalはGoogle Driveを直接読みません。
-**管理Spreadsheetを唯一の公開マスタ**として使用します。
+1. OAuth認証
+2. 管理Spreadsheet接続
+3. Google Drive接続
 
-## 管理Spreadsheet
-
-```text
-https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
-```
-
-主に次のシートを使用します。
-
-- `公開パッケージ`
-- `公開資料`
-- `アクセスログ`
-- `アクセス集計`
-- `サイト集計`
-- `サイト設定`
-- `Drive同期履歴`
-
-Adminで保存するとこのSpreadsheetへ即時書き込みます。
-
-## Google Drive
-
-同期元:
-
-```text
-https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
-```
-
-Adminを開くたびに自動同期します。
-必要なときはAdmin上部または資料タブの「Drive同期」を押して手動同期できます。
-
-### Drive同期で行うこと
-
-- サブフォルダを含めて再帰検索
-- PDF検出
-- `.gs` / `.js` 検出
-- Google Form検出
-- Google Spreadsheet検出
-- Google Driveショートカットを実体IDへ解決
-- ファイル名更新
-- MIMEタイプ更新
-- Driveパス保存
-- Drive更新日時保存
-- 最終同期時刻保存
-- Driveから見つからなくなった資料を `MISSING` として表示
-- 新規Driveファイルは非公開で登録
-
-ショートカットの場合も、対象ファイルのIDとMIMEタイプを取得して管理します。
-
-## パッケージ
-
-関連資料は大きなパッケージ単位で表示します。
-
-### 実験ツール貸出管理システム
-
-- 実験ツール貸出・返却フォーム
-- 実験ツール貸出管理台帳
-- Google Apps Script
-- 説明PDF等
-
-### SKYSEF 2026
-
-- SKYSEF Webサイト
-- 今後追加するPDF・プログラム等
-
-Driveサブフォルダを使った場合は、そのサブフォルダ名から非公開パッケージを自動生成します。
-Adminで確認して公開できます。
+未認証の場合は資料一覧を0件として表示せず、
+`Google権限を認証` ボタンを表示します。
 
 ## Admin
 
@@ -97,12 +26,73 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 5801
 ```
 
-Admin上部から直接、
+### 初回
 
-- Driveフォルダ
-- 管理Spreadsheet
+Adminへログインします。
 
-を開けます。
+OAuth認証が不足している場合:
+
+```text
+OAuth認証: 認証が必要
+Spreadsheet: 未確認
+Drive: 未確認
+```
+
+と表示されます。
+
+`Google権限を認証` を押してください。
+
+重要:
+**claspでこのWebアプリをデプロイしたGoogleアカウント**で認証します。
+
+認証後にAdminへ戻り、
+
+`接続を再確認`
+
+を押します。
+
+正常なら:
+
+```text
+OAuth認証: 認証済み
+管理Spreadsheet: OK
+Google Drive: OK
+```
+
+となり、その後にDrive同期と資料マスタ読込を実行します。
+
+## OAuth scopes
+
+`appsscript.json` に明示しています。
+
+```text
+https://www.googleapis.com/auth/spreadsheets
+https://www.googleapis.com/auth/drive.readonly
+```
+
+## 管理Spreadsheet
+
+```text
+https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
+```
+
+## Drive
+
+```text
+https://drive.google.com/drive/folders/16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
+```
+
+## データフロー
+
+```text
+Drive
+ ↓ Admin同期
+管理Spreadsheet
+ ↓ Admin編集・保存
+管理Spreadsheet
+ ↓
+公開Portal
+```
 
 ## 固定GAS
 
@@ -120,21 +110,17 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 
 ## デプロイ
 
-同じフォルダに:
+同じフォルダへ:
 
 ```text
-ssh_educational_materials_portal_v6.zip
-deploy_portal_v6.cmd
+ssh_educational_materials_portal_v7.zip
+deploy_portal_v7.cmd
 ```
 
-を置き、CMDを実行します。
+を置いてCMDを実行してください。
 
-CMDは:
+v7では、デプロイ直後にOAuth認証がまだ必要な場合でも
+「GASデプロイ失敗」とは判定しません。
 
-1. GitHub更新
-2. GAS push
-3. 既存Web App再デプロイ
-4. public_data API確認
-5. Admin画面確認
-
-を行います。
+Admin画面が新しくデプロイされたことを確認した後、
+Admin内のGoogle認証へ進みます。
