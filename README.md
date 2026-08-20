@@ -1,265 +1,176 @@
-# SSH Educational Materials Portal v2
+# SSH Educational Materials Portal v3
 
-GitHub Pagesを公開サイト、Google Apps Scriptを「管理画面・Drive同期・アクセスログ・集計」のバックエンドとして使う構成です。
+GitHub Pagesを公開サイト、Google Apps Scriptを管理・Drive同期・アクセスログ・集計のバックエンドとして使用します。
 
-## 主な機能
+## 固定GAS WebアプリURL
 
-公開ページ:
-- Adminボタン
-- Adminで公開設定した資料だけを表示
-- 種別: PDF / Google Apps Script / Google Form / Spreadsheet / GitHub HP
-- 資料ごとの説明コメント
-- 資料ごとの閲覧数・ダウンロード数
-- 資料ごとのプレビュー
-- 検索・種別絞り込み
+```text
+https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec
+```
 
-Admin:
-- パスワード認証
-- Google Driveフォルダ同期
-- 公開 / 非公開
-- 表示順
-- タイトル
-- 種別
-- 説明コメント
-- キーワード
-- 元URL
-- ダウンロード / 外部オープンURL
-- ボタン表示
-- プレビュー有効 / 無効
-- プレビューURL
-- プレビュー高さ
-- 公開サイトのタイトル・説明文
-- サイト閲覧数
-- 資料閲覧数
-- プレビュー回数
-- ダウンロード数
-- 外部オープン数
-- 最新アクセスログ
+`index.html` にはこのURLを設定済みです。今後は同じDeployment IDを再デプロイするため、GASを更新してもこのURLを維持します。
 
-## 使用するGoogleリソース
+## 構成
 
-### 管理・ログ用スプレッドシート
-
-`Code.gs` に設定済みです。
-
-`1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE`
-
-以下のシートを追加・利用します。
-
-- 公開資料
-- アクセスログ
-- アクセス集計
-- サイト集計
-- サイト設定
-
-既存の `アクセスログ` は `setupPortal()` で消去しません。
-
-### 公開ファイル用Google Driveフォルダ
-
-`Code.gs` に設定済みです。
-
-`16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2`
-
-Adminの「Driveを同期」でサブフォルダまで検索します。
-新しく検出したファイルは **非公開** で資料マスタに追加します。
-Adminで説明・プレビュー等を確認してから「公開する」をONにしてください。
-
----
-
-# 初回設定
-
-## 1. Apps Scriptに2ファイルを作る
-
-GASプロジェクトに:
-
-- `Code.gs`
-- HTMLファイル `Admin`
-
-を作ります。
-
-このZIPの:
-
+- `index.html`
+  - GitHub Pages公開ページ
+  - Adminボタン
+  - 公開資料一覧
+  - 閲覧数・ダウンロード数
+  - 資料プレビュー
 - `gas/Code.gs`
+  - GASバックエンド
+  - 公開資料マスタ
+  - Google Drive同期
+  - アクセスログ・集計
+  - Admin API
 - `gas/Admin.html`
+  - 管理画面
+- `gas/appsscript.json`
+  - Apps Script manifest
+- `assets/files/`
+  - GitHub側に置く資料
+- `README.md`
 
-をそれぞれ貼り付けます。
+## Googleリソース
 
-## 2. Adminパスワードを設定
+管理・ログ用Spreadsheet ID:
 
-パスワードを公開GitHubへ書かないため、コードには `5801` を埋め込んでいません。
+```text
+1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE
+```
+
+公開ファイル用Drive Folder ID:
+
+```text
+16Y0OUmmDkbL_pkXGK3wZOXhzA6B5QuK2
+```
+
+## Adminパスワード
+
+GitHubへパスワードを公開しないため、`5801` はコードへ直接埋め込みません。
 
 Apps Script:
 
 `Project Settings → Script Properties`
 
-で追加します。
+に次を設定します。
 
-- Property: `ADMIN_PASSWORD`
-- Value: `5801`
+```text
+ADMIN_PASSWORD = 5801
+```
 
-## 3. setupPortal() を一度実行
+## 初回GASセットアップ
 
-Apps Scriptエディタで:
+Apps Scriptで一度だけ:
 
 ```javascript
 setupPortal()
 ```
 
-を一度実行し、Google DriveとSpreadsheetへのアクセス権限を許可します。
+を実行してください。
 
-初期データとして:
+## 一括デプロイ
 
-- 実験ツール貸出管理システム（返却処理修正版）: 公開
-- 提示されたGoogle Formプレビュー例: 非公開
-
-を登録します。
-
-Google Form例:
+同じフォルダに次を置きます。
 
 ```text
-https://docs.google.com/forms/d/1qW8XNY0Or272UG40cMuykOFQQ47p1hp6QgkK5pjwKEk/preview
+ssh_educational_materials_portal_v3.zip
+deploy_github_and_gas.cmd
 ```
 
-## 4. GASをWebアプリとしてデプロイ
+`deploy_github_and_gas.cmd` を実行すると:
+
+1. ZIPを展開
+2. GitHubリポジトリをclone
+3. GitHub Pages用ファイルをcommit / push
+4. GAS用ファイルを一時フォルダへ準備
+5. `clasp push --force`
+6. Deployment ID `AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw` を再デプロイ
+7. 固定 `/exec` URLを維持
+
+まで一括実行します。
+
+## 初回だけCMDが尋ねる値
+
+### 1. Apps Script Script ID
+
+Deployment IDとは別です。
 
 Apps Script:
 
-`Deploy → New deployment → Web app`
+`Project Settings → IDs → Script ID`
 
-公開サイトからアクセスできる設定でデプロイします。
+から取得します。
 
-発行された `/exec` URLをコピーしてください。
+入力値はCMDと同じフォルダの:
 
-## 5. index.htmlへGAS URLを設定
-
-`index.html` の:
-
-```javascript
-const GAS_WEB_APP_URL =
-  'https://script.google.com/macros/s/PASTE_DEPLOYMENT_ID/exec';
+```text
+gas_script_id.local.txt
 ```
 
-を実際の `/exec` URLへ変更します。
+へ保存されます。ZIPにもGitHubにも含まれません。
 
-これで公開ページ右上の **Admin** ボタンも自動的に管理画面へつながります。
+### 2. GitHub commit email
 
----
+`szkssh00-bit` アカウントに登録しているメールアドレスを入力します。
 
-# Adminの使い方
+```text
+github_commit_email.local.txt
+```
 
-## Driveを同期
+へ保存され、このリポジトリだけのcommit author設定に使われます。
 
-「Driveを同期」を押します。
+## 必要環境
 
-指定Driveフォルダ内のファイルを再帰的に取得します。
+- Git for Windows
+- PowerShell
+- Node.js 20以上
+- npm
+- Apps Script API 有効
 
-自動判定:
-- `.pdf` → PDF
-- Google Form → Google Form
-- Google Spreadsheet → Spreadsheet
-- Google Apps Script / `.gs` / `.js` → Google Apps Script
+Apps Script API:
 
-未対応形式は種別が空欄になるため、Adminの編集画面で種別を設定してください。
+```text
+https://script.google.com/home/usersettings
+```
 
-## URL資料を追加
+`clasp` はCMDから `npx --yes @google/clasp` で呼び出すため、グローバルインストールは不要です。
 
-GitHub Pages等は「URL資料を追加」から追加します。
+## 重要
 
-種別:
+`clasp push --force` は、対象Apps Scriptプロジェクトのソースをローカル側の内容で更新します。
 
-`GitHub HP`
+したがって、このGASプロジェクトはSSH Educational Materials Portal専用として扱ってください。
+Apps Scriptエディタで別機能のコードを同じプロジェクトへ追加した場合、CMDデプロイ時に失われる可能性があります。
 
-元URL・アクションURL・プレビューURLに対象URLを設定します。
+## 管理画面で扱える種別
 
-## プレビュー
+- PDF
+- Google Apps Script
+- Google Form
+- Spreadsheet
+- GitHub HP
 
-自動候補:
+## プレビュー例
 
-PDF等:
+Google Drive PDF等:
+
 ```text
 https://drive.google.com/file/d/FILE_ID/preview
 ```
 
 Google Form:
+
 ```text
 https://docs.google.com/forms/d/FORM_ID/preview
 ```
 
 Spreadsheet:
+
 ```text
 https://docs.google.com/spreadsheets/d/SHEET_ID/preview
 ```
 
-GitHub HP:
-```text
-対象HPのURL
-```
-
-すべてAdminから上書きできます。
-
-外部サイト側がiframeを禁止している場合は、その資料の
-「プレビュー枠を表示する」をOFFにしてください。
-
-## ダウンロード
-
-PDF:
-```text
-https://drive.google.com/uc?export=download&id=FILE_ID
-```
-
-Spreadsheet:
-```text
-https://docs.google.com/spreadsheets/d/FILE_ID/export?format=xlsx
-```
-
-Google FormやGitHub HP等は「開く」を使用できます。
-
-Google Apps Scriptについて:
-- `.gs` / `.js` としてDriveに保存したファイルはダウンロードURLを自動生成
-- Google Apps Scriptのネイティブプロジェクトは元URLを開く設定を基本とする
-
----
-
-# アクセス計測
-
-ログイベント:
-
-- `page_view`: サイト閲覧
-- `material_view`: 資料カード閲覧
-- `preview_open`: プレビュー表示
-- `download`: ダウンロード
-- `open`: Google FormやGitHub HP等の外部オープン
-
-公開サイトでは:
-- 閲覧数
-- DL数
-
-を表示します。
-
-Adminでは全指標を表示します。
-
-アクセスの生ログは指定スプレッドシートの `アクセスログ` に残します。
-
----
-
-# Drive共有権限について
-
-GASがファイルを検出できても、公開サイトの閲覧者にDriveファイルの閲覧権限がなければ、
-プレビューやダウンロードはできません。
-
-公開対象のファイルは、想定する閲覧者がアクセスできる共有設定にしてください。
-
----
-
-# パスワードについて
-
-指定どおり `5801` を利用できます。
-
-ただし4桁パスワードは管理画面の認証としては強くありません。
-後から変更する場合、GitHubのHTMLを変更する必要はありません。
-
-Apps Scriptの:
-
-`Project Settings → Script Properties → ADMIN_PASSWORD`
-
-だけを変更してください。
+GitHub HPは対象URLをそのままプレビューURLとして設定できます。
+ただし、相手側サイトがiframe表示を禁止している場合はAdminでプレビューをOFFにしてください。
