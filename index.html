@@ -107,7 +107,7 @@ function observe(){
 function load(){
  if(!configured()){grid.innerHTML='<div class="error">GAS WebアプリURLが未設定です。index.html の GAS_WEB_APP_URL を設定してください。</div>';apply();return}
  const cb='ssh_'+Date.now()+'_'+Math.floor(Math.random()*1e5),s=document.createElement('script');
- window[cb]=p=>{state.materials=p.materials||[];state.stats=p.stats||state.stats;state.settings=p.settings||{};apply();types();render();delete window[cb];s.remove()};
+ window[cb]=p=>{if(p&&p.ok===false){grid.innerHTML='<div class="error">GASエラー: '+esc(p.error||'不明なエラー')+'</div>';delete window[cb];s.remove();return}state.materials=p.materials||[];state.stats=p.stats||state.stats;state.settings=p.settings||{};apply();types();render();delete window[cb];s.remove()};
  s.onerror=()=>{grid.innerHTML='<div class="error">GASから資料情報を取得できません。</div>';delete window[cb];s.remove()};
  s.src=`${GAS_WEB_APP_URL}?mode=public_data&callback=${cb}&_=${Date.now()}`;document.head.appendChild(s);
 }

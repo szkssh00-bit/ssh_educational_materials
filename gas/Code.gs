@@ -34,7 +34,13 @@ function doGet(e){
    return HtmlService.createHtmlOutputFromFile('Admin')
      .setTitle('SSH Educational Materials Admin');
  }
- if(p.mode==='public_data') return jsonp_(publicData_(),p.callback||'');
+ if(p.mode==='public_data'){
+   try{
+     return jsonp_({ok:true,...publicData_()},p.callback||'');
+   }catch(err){
+     return jsonp_({ok:false,error:String(err&&err.message?err.message:err)},p.callback||'');
+   }
+ }
  const ev=String(p.event||'').trim();
  if(EVENTS.has(ev)){
    log_({event:ev,id:p.material_id||'',title:p.title||'',file:p.file_name||'',
@@ -143,6 +149,7 @@ function adminPreviewDefaults(token,input){
 function publicData_(){
  const ss=SpreadsheetApp.openById(SPREADSHEET_ID);
  materialsSheet_(ss);statsSheet_(ss);siteSheet_(ss);settingsSheet_(ss);
+ seed_(ss);
  const ms=allMaterials_(ss).filter(x=>x.published)
    .sort((a,b)=>Number(a.order||0)-Number(b.order||0)||a.title.localeCompare(b.title,'ja'));
  const sm=statsMap_(ss),outStats={};
