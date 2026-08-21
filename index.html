@@ -7,10 +7,10 @@
 :root{--p:#0b5a72;--p2:#083f52;--bg:#f3f6f8;--card:#fff;--line:#d8e2e7;--txt:#173042;--muted:#667984;--soft:#eef4f6;--accent:#b87409}
 *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--txt);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Hiragino Sans","Yu Gothic","Meiryo",sans-serif;line-height:1.65}
 a{color:inherit}button,input,select{font:inherit}
-.hero{background:radial-gradient(circle at 88% 12%,#d7972438,transparent 27%),linear-gradient(135deg,#073f51,#0b5a72 58%,#19738c);color:#fff;padding:28px 20px 52px}
-.inner{width:min(1180px,calc(100% - 32px));margin:auto}.top{display:flex;justify-content:space-between;gap:16px;align-items:center;margin-bottom:38px}.brand{font-size:.84rem;font-weight:850;letter-spacing:.09em}
-.admin{border:1px solid #ffffff55;border-radius:10px;padding:8px 14px;text-decoration:none;background:#ffffff14;font-weight:800;font-size:.8rem}
-h1{font-size:clamp(2.1rem,5vw,3.9rem);line-height:1.07;margin:8px 0 12px}.hero p{max-width:820px;margin:0;color:#ffffffdf}.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:24px}.stat{min-width:150px;border:1px solid #ffffff35;background:#ffffff11;border-radius:12px;padding:10px 14px}.stat small{display:block;opacity:.75}.stat strong{font-size:1.22rem}
+.hero{background:radial-gradient(circle at 88% 12%,#d7972438,transparent 27%),linear-gradient(135deg,#073f51,#0b5a72 58%,#19738c);color:#fff;padding:12px 20px 18px}
+.inner{width:min(1180px,calc(100% - 32px));margin:auto}.top{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.brand{font-size:.68rem;font-weight:850;letter-spacing:.08em}
+.admin{border:1px solid #ffffff55;border-radius:8px;padding:5px 9px;text-decoration:none;background:#ffffff14;font-weight:800;font-size:.68rem}
+h1{font-size:clamp(1.15rem,2.2vw,1.75rem);line-height:1.2;margin:1px 0 4px;font-weight:850}.hero p{max-width:960px;margin:0;color:#ffffffdf;font-size:.84rem;line-height:1.4}.stats{display:flex;gap:6px;flex-wrap:wrap;margin-top:9px}.stat{min-width:105px;border:1px solid #ffffff35;background:#ffffff11;border-radius:8px;padding:5px 8px}.stat small{display:block;opacity:.75;font-size:.6rem}.stat strong{font-size:.9rem}
 main{padding:30px 0 68px}.intro{background:#fff;border:1px solid var(--line);border-radius:16px;padding:20px;box-shadow:0 8px 26px #1833440d}.intro h2{margin:0 0 6px}.intro p{margin:0;color:var(--muted)}
 .controls{display:flex;gap:10px;flex-wrap:wrap;margin:20px 0}.controls input,.controls select{border:1px solid var(--line);background:#fff;border-radius:10px;padding:10px 12px}.controls input{flex:1 1 320px}.controls select{min-width:190px}
 .heading{display:flex;justify-content:space-between;align-items:end;gap:15px;margin:18px 0 12px}.heading h2{margin:0}.heading span{font-size:.82rem;color:var(--muted)}
@@ -32,35 +32,40 @@ footer{border-top:1px solid var(--line);background:#fff;padding:24px 20px;color:
 <body>
 <header class="hero"><div class="inner">
  <div class="top"><div class="brand">SSH EDUCATIONAL MATERIALS</div><a id="adminLink" class="admin" href="#" target="_blank" rel="noopener">Admin</a></div>
- <h1 id="siteTitle">教育・研究支援資料</h1>
- <p id="siteSubtitle">SSHの活動を通して開発した教材・研究支援ツール・プログラムを、関連資料ごとにまとめて公開します。</p>
+ <h1 id="siteTitle">静岡北中学校・高等学校　SSH開発教材・支援資料　普及サイト</h1>
+ <p id="siteSubtitle">SSHの活動を通して開発した教材・研究支援ツール・プログラムを公開します。</p>
  <div class="stats"><div class="stat"><small>サイト閲覧数</small><strong id="siteViews">—</strong></div><div class="stat"><small>公開パッケージ</small><strong id="packageCount">—</strong></div><div class="stat"><small>公開資料</small><strong id="materialCount">—</strong></div></div>
 </div></header>
 <main class="inner">
- <section class="intro"><h2 id="introTitle">公開資料について</h2><p id="introText">関連するフォーム、台帳、コード、PDF、Webサイトなどをパッケージ単位でまとめています。</p></section>
+ <section class="intro"><h2 id="introTitle">公開資料について</h2><p id="introText">本校では探究活動として課題研究などを実施しています。授業実施のために開発した教材や支援資料をダウンロード・閲覧ができます。</p></section>
  <div class="controls"><input id="searchInput" type="search" placeholder="パッケージ名・資料名・説明・キーワードで検索"><select id="typeFilter"><option value="">すべての種別</option></select></div>
  <div class="heading"><h2>公開パッケージ</h2><span id="summary">読み込み中</span></div>
  <section id="packages" class="packages"><div class="empty">資料情報を読み込んでいます。</div></section>
 </main>
-<footer><div class="inner"><span id="footerText">SSH Educational Materials</span></div></footer>
+<footer><div class="inner"><span id="footerText">Shizuoka Kita SSH Educational Materials</span></div></footer>
 <script>
 const GAS_WEB_APP_URL='https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec';
 const state={packages:[],materials:[],stats:{siteViews:0,materials:{}},settings:{},q:'',type:''};
 const el=id=>document.getElementById(id);
 const esc=v=>String(v??'').replaceAll('&','&amp;').replaceAll('<','&lt;').replaceAll('>','&gt;').replaceAll('"','&quot;').replaceAll("'",'&#039;');
 const num=v=>Number(v||0).toLocaleString('ja-JP');
+const PUBLIC_COUNT_THRESHOLD=10;
+function countChip(label,value){
+ const n=Number(value||0);
+ return n>=PUBLIC_COUNT_THRESHOLD?`<span>${label} ${num(n)}</span>`:'';
+}
 function logEvent(event,m){
  const p=new URLSearchParams({event,material_id:m?.id||'',title:m?.title||'',file_name:m?.fileName||'',page_url:location.href,referrer:document.referrer||''});
  fetch(`${GAS_WEB_APP_URL}?${p}`,{mode:'no-cors',cache:'no-store',keepalive:true}).catch(()=>{});
 }
 function applySettings(){
  const s=state.settings||{};
- document.title=s.siteTitle||'SSH Educational Materials';
- el('siteTitle').textContent=s.siteTitle||'教育・研究支援資料';
- el('siteSubtitle').textContent=s.siteSubtitle||'';
+ document.title=s.siteTitle||'静岡北中学校・高等学校　SSH開発教材・支援資料　普及サイト';
+ el('siteTitle').textContent=s.siteTitle||'静岡北中学校・高等学校　SSH開発教材・支援資料　普及サイト';
+ el('siteSubtitle').textContent=s.siteSubtitle||'SSHの活動を通して開発した教材・研究支援ツール・プログラムを公開します。';
  el('introTitle').textContent=s.introTitle||'公開資料について';
- el('introText').textContent=s.introText||'';
- el('footerText').textContent=s.footerText||'SSH Educational Materials';
+ el('introText').textContent=s.introText||'本校では探究活動として課題研究などを実施しています。授業実施のために開発した教材や支援資料をダウンロード・閲覧ができます。';
+ el('footerText').textContent=s.footerText||'Shizuoka Kita SSH Educational Materials';
  el('siteViews').textContent=num(state.stats?.siteViews||0);
  el('packageCount').textContent=num(state.packages.length);
  el('materialCount').textContent=num(state.materials.length);
@@ -94,7 +99,7 @@ function render(){
    const totals=p.children.reduce((a,m)=>{const s=statMap[m.id]||{};a.views+=Number(s.views||0);a.downloads+=Number(s.downloads||0);a.opens+=Number(s.opens||0);return a},{views:0,downloads:0,opens:0});
    return `<article class="package">
     <div class="package-head"><div class="package-top"><div><div class="standalone-label">PACKAGE</div><h3>${esc(p.title)}</h3><p class="package-desc">${esc(p.description||'')}</p></div>
-    <div class="package-stats"><span class="pstat">${p.children.length}資料</span><span class="pstat">閲覧 ${num(totals.views)}</span><span class="pstat">DL ${num(totals.downloads)}</span></div></div></div>
+    <div class="package-stats"><span class="pstat">${p.children.length}資料</span>${totals.views>=PUBLIC_COUNT_THRESHOLD?`<span class="pstat">閲覧 ${num(totals.views)}</span>`:''}${totals.downloads>=PUBLIC_COUNT_THRESHOLD?`<span class="pstat">DL ${num(totals.downloads)}</span>`:''}</div></div></div>
     <div class="resources">${p.children.map(m=>resourceHtml(m,statMap[m.id]||{})).join('')}</div>
    </article>`;
  }).join('');
@@ -103,12 +108,17 @@ function render(){
 }
 function resourceHtml(m,s){
  const pv=m.previewEnabled&&m.previewUrl;
+ const countHtml=[
+   countChip('閲覧',s.views),
+   countChip('Preview',s.previewViews),
+   countChip('DL',s.downloads)
+ ].filter(Boolean).join('');
  return `<section class="resource" data-material="${esc(m.id)}"><div class="resource-body">
    <div class="badges"><span class="badge">${esc(m.type)}</span>${m.sourceKind==='drive'?'<span class="badge">Google Drive</span>':''}</div>
    <h4>${esc(m.title)}</h4><p>${esc(m.description||'')}</p>${m.fileName?`<div class="filename">${esc(m.fileName)}</div>`:''}
   </div>
   ${pv?`<iframe class="preview-frame" data-frame="${esc(m.id)}" data-src="${esc(m.previewUrl)}" height="${Number(m.previewHeight||520)}" loading="lazy" allow="fullscreen"></iframe>`:''}
-  <div class="resource-actions"><div class="counts"><span>閲覧 ${num(s.views)}</span><span>Preview ${num(s.previewViews)}</span><span>DL ${num(s.downloads)}</span></div>
+  <div class="resource-actions">${countHtml?`<div class="counts">${countHtml}</div>`:'<div></div>'}
    <div class="actionset">${pv?`<button class="btn preview" data-preview="${esc(m.id)}">プレビュー</button>`:''}${m.actionUrl?`<a class="btn primary" data-action="${esc(m.id)}" href="${esc(m.actionUrl)}" target="_blank" rel="noopener">${esc(m.actionLabel||'開く')}</a>`:''}</div></div>
   </section>`;
 }

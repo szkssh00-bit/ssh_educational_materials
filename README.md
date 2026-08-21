@@ -1,100 +1,84 @@
-# SSH Educational Materials Portal v11
+# SSH Educational Materials Portal v12
 
-## v11: 説明文をSpreadsheetと正式に連動
+## 変更点
 
-パッケージと公開資料のdescriptionを、管理Spreadsheetの **「説明管理」シート** から直接編集できます。
+### 1. 公開Portalのヘッダーをスリム化
 
-管理Spreadsheet:
+タイトルサイズ、上下余白、ブランド表示、Adminボタン、統計ボックスを縮小しました。
 
-```text
-https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
-```
+サイト文言は初回v12適用時に次へ更新します。
 
-v11デプロイ後、自動的に次のシートが作成されます。
+| 項目 | 値 |
+| --- | --- |
+| siteTitle | 静岡北中学校・高等学校　SSH開発教材・支援資料　普及サイト |
+| siteSubtitle | SSHの活動を通して開発した教材・研究支援ツール・プログラムを公開します。 |
+| introTitle | 公開資料について |
+| introText | 本校では探究活動として課題研究などを実施しています。授業実施のために開発した教材や支援資料をダウンロード・閲覧ができます。 |
+| footerText | Shizuoka Kita SSH Educational Materials |
 
-```text
-説明管理
-```
+このプリセットは **v12初回だけ** 適用します。その後にAdminやSpreadsheetから変更した値は再同期しても上書きしません。
 
-列構成:
+## 2. descriptionの正本を単純化
 
-```text
-対象種別 | 対象ID | 表示名 | 説明 | 更新日時
-```
+v12以降の正式な編集元:
 
-対象種別は:
+- パッケージ説明 → `公開パッケージ` シートの **説明** 列
+- 公開資料説明 → `公開資料` シートの **説明コメント** 列
 
-```text
-パッケージ
-公開資料
-```
-
-です。
-
-## 編集例
-
-### パッケージ
-
-現在:
+Adminも同じ列を直接読み書きします。
 
 ```text
-Google Driveフォルダ「【外部公開中】科学英語」から自動作成したパッケージです。
+Spreadsheetの説明列
+        ↕
+      Admin
+        ↓
+   公開Portal
 ```
 
-「説明管理」シートで:
+Google Drive同期では説明列を更新しません。
+
+したがって、Spreadsheetで説明を変更した後にAdminからDrive同期してもロールバックしません。
+
+旧v11の `説明管理` シートはv12初回に `説明管理_旧_v11` へ退避します。
+
+## 3. 自動パッケージ説明を廃止
+
+今後Driveフォルダから新規パッケージを作る場合、説明は空欄で作成します。
+
+次のような自動文章は生成しません。
 
 ```text
-対象種別: パッケージ
-表示名: 【外部公開中】科学英語
-説明: （ここを自由に編集）
+Google Driveフォルダ「【外部公開中】課題研究」から自動作成したパッケージです。
 ```
 
-とすると、Adminと公開Portalのパッケージ説明に反映されます。
+既存データにこの形式の自動説明が残っている場合も、v12初回にその自動生成文だけを空欄へ整理します。
+手入力した説明は消しません。
 
-### 公開資料
+## 4. 公開カウンターは10以上のみ表示
+
+資料ごとの:
+
+- 閲覧
+- Preview
+- DL
+
+は、それぞれ **10以上になった項目だけ** 公開Portalに表示します。
 
 例:
 
 ```text
-表示名: 【外部公開中】実験ツール貸出・返却フォーム
-説明: 貸出または返却を記録するGoogle Formです。
+閲覧 9 / Preview 0 / DL 3
+→ 何も表示しない
+
+閲覧 12 / Preview 4 / DL 10
+→ 閲覧 12　DL 10
 ```
 
-「説明」列を変更すると、Adminと公開Portalに反映されます。
+パッケージ集計の閲覧・DLも10未満は表示しません。
 
-## 同期ルール
-
-説明文については「説明管理」シートが正式なマスタです。
-
-```text
-説明管理シート
-   ↓
-公開パッケージ / 公開資料
-   ↓
-Admin
-   ↓
-公開Portal
-```
-
-Adminで説明を編集して保存した場合も「説明管理」シートへ同時保存します。
-
-Google Drive同期では:
-
-- ファイル名
-- Drive ID
-- MIMEタイプ
-- Driveパス
-- Drive更新日時
-
-などは更新しますが、**説明文は上書きしません**。
-
-したがって、説明文を手作業で整えた後にDrive同期しても保持されます。
+Adminでは従来通り実数を確認できます。
 
 ## Admin
-
-```text
-https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec?page=admin
-```
 
 パスワード:
 
@@ -102,26 +86,17 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 5801
 ```
 
-Admin上部に新しく:
+Admin上部に:
+
+- パッケージ表
+- 資料表
+
+への直接リンクを追加しています。
+
+管理Spreadsheet:
 
 ```text
-説明管理シート
-```
-
-ボタンを追加しています。
-
-## 固定GAS
-
-Script ID:
-
-```text
-15WnOsdwFLlIKHjsNR9Eo_6If4jbBzjAQLSVylmXVKJw2CAttywn6ILyn
-```
-
-Web App:
-
-```text
-https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_MjIx1tg2NUAX1YkoR9OHlv7OKex1fw/exec
+https://docs.google.com/spreadsheets/d/1vaYebYAsHXijZfabMmebltdSj5PbM8wd29WfzNFPqvE/edit
 ```
 
 ## デプロイ
@@ -129,8 +104,8 @@ https://script.google.com/macros/s/AKfycbwq_w2GxPfrwuzjhAEXj9SkKp3kur1JMAZexrD_M
 同じフォルダに:
 
 ```text
-ssh_educational_materials_portal_v11.zip
-deploy_portal_v11.cmd
+ssh_educational_materials_portal_v12.zip
+deploy_portal_v12.cmd
 ```
 
-を置き、`deploy_portal_v11.cmd` を実行してください。
+を置いて `deploy_portal_v12.cmd` を実行してください。
